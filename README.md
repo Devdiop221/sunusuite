@@ -37,7 +37,7 @@ Le projet est structuré en Monorepo pour une scalabilité maximale :
 
 ```bash
 # Cloner le projet
-git clone https://github.com/votre-user/sunusuite.git
+git clone https://github.com/devdiop221/sunusuite.git
 
 # Installer les dépendances
 pnpm install
