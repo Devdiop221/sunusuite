@@ -1,46 +1,62 @@
-# 🇸🇳 SunuSuite : La Suite Numérique Souveraine
+# SunuSuite 🇸🇳
 
-> **Projet candidat au Hackathon iSAFE 2026 - Défi : "Protéger le citoyen à l'ère du Numérique"**
+> **Alternative souveraine à Google Workspace pour le Sénégal**
+> Projet présenté au hackathon **iSAFE 2026**
 
-![Status](https://img.shields.io/badge/Status-Proof_of_Concept-blue) ![License](https://img.shields.io/badge/License-MIT-green) ![Tech](https://img.shields.io/badge/Stack-NestJS_React_AI-black)
+---
 
-## 🎯 Vision
+## 🏗️ Architecture Monorepo
 
-**SunuSuite** est une plateforme de collaboration numérique souveraine conçue spécifiquement pour l'administration et les entreprises sénégalaises. Face aux menaces croissantes (phishing, fuite de données, espionnage), SunuSuite remplace les outils étrangers par une infrastructure locale, protégée par une **Intelligence Artificielle de Confiance**.
+```
+sunusuite/
+├── apps/
+│   ├── api/          # NestJS – Backend REST + WebSocket
+│   └── web/          # React + Vite + TailwindCSS
+└── packages/
+    ├── types/        # Types TypeScript partagés
+    └── ui/           # Composants UI réutilisables
+```
 
-## 🛡️ Modules & Innovations
-
-### 1. 📝 SunuDocs (Édition Sécurisée)
-Alternative souveraine pour l'édition collaborative.
-- **Innovation IA :** Détection proactive des données sensibles (PII) avant partage externe.
-- **Souveraineté :** Hébergement des documents sur le sol sénégalais.
-
-### 2. 💬 SunuChat (Messagerie Chiffrée)
-Communication instantanée pour les équipes.
-- **Innovation IA :** Agent anti-phishing intégré qui analyse les liens et pièces jointes en temps réel.
-- **Éducation :** Feedback pédagogique en Wolof/Français lors de la détection de menaces.
-
-### 3. 📹 SunuMeet (Visioconférence Certifiée)
-Réunions vidéo sécurisées.
-- **Innovation IA :** Certification biométrique des participants pour contrer les **Deepfakes**.
-
-## 🏗️ Architecture Technique (PoC)
-
-Le projet est structuré en Monorepo pour une scalabilité maximale :
-
-- **Backend :** NestJS (API REST + WebSockets pour le temps réel).
-- **Frontend :** React + TailwindCSS (Interface épurée et accessible).
-- **AI Core :** Micro-service Python/NestJS intégrant des modèles de détection (LLM local).
-- **Base de données :** PostgreSQL (Données chiffrées).
-
-## 🚀 Installation (Développement)
+## 🚀 Démarrage rapide
 
 ```bash
-# Cloner le projet
-git clone https://github.com/devdiop221/sunusuite.git
+# Prérequis : Node 20+, PNPM 9+
+npm install -g pnpm
 
 # Installer les dépendances
 pnpm install
 
-# Lancer le serveur de développement
-pnpm run dev
+# Démarrer en mode développement (tous les apps en parallèle)
+pnpm dev
+
+# OU démarrer individuellement
+pnpm --filter @sunusuite/api dev      # API sur http://localhost:3001
+pnpm --filter @sunusuite/web dev      # Web sur http://localhost:5173
+```
+
+## 🛡️ Modules
+
+| Module          | Description                                          | Status |
+|-----------------|------------------------------------------------------|--------|
+| `AuthModule`    | JWT + Passport – Authentification sécurisée         | ✅     |
+| `DocsModule`    | SunuDocs – Collaboration documentaire               | ✅     |
+| `ChatModule`    | SunuChat – Messagerie WebSocket E2E                 | ✅     |
+| `MeetModule`    | SunuMeet – Visioconférence souveraine               | ✅     |
+| `SecurityAIModule` | IA anti-phishing + détection deepfake            | ✅     |
+
+## 🤖 SecurityAI
+
+- **PhishingDetectionService** – Analyse URLs et messages en temps réel
+- **DeepfakeGuardService** – Détecte les médias falsifiés (images/vidéos)
+
+## 📚 Documentation API
+
+Swagger disponible sur : `http://localhost:3001/api/docs`
+
+## 🔧 Stack Technique
+
+- **Monorepo** : Turborepo + PNPM Workspaces
+- **Backend** : NestJS 10 · TypeScript strict
+- **Frontend** : React 18 · Vite · TailwindCSS
+- **Auth** : JWT · Passport · bcrypt
+- **Temps réel** : WebSocket (Socket.io via NestJS Gateway)

@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+
+  # ── PostgreSQL ─────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: sunusuite_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sunuadmin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sunusecret}
+      POSTGRES_DB: ${POSTGRES_DB:-sunusuite}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis (cache + sessions + pub/sub pour WebSockets) ────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: sunusuite_redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-sunuredis}
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── MinIO (stockage objet souverain – alternative à S3) ───────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: sunusuite_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-sunuminio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-sunuminiop@ss}
+    ports:
+      - '9002:9000'   # API (port externe modifié pour éviter les conflits)
+      - '9003:9001'   # Console Web (port externe modifié pour éviter les conflits)
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ── AI Agent (Python / FastAPI) ───────────────────────────────────────────
+  ai-agent:
+    build:
+      context: ./apps/ai-agent
+      dockerfile: Dockerfile
+    container_name: sunusuite_ai_agent
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    environment:
+      - PYTHONPATH=/app/src
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/ai-agent/src:/app/src:ro
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+networks:
+  default:
+    name: sunusuite_network

@@ -1,0 +1,11 @@
+{
+  "name": "@sunusuite/types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Types TypeScript partagés entre les apps SunuSuite",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "tsc --noEmit"
+  }
+}
